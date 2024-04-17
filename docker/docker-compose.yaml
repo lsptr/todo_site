@@ -1,0 +1,14 @@
+version: "3.3"
+
+services:
+  db:
+    restart: always
+    image: postgres
+    environment:
+      POSTGRES_USER: hop
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: postgres
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
+    ports:
+      - 5432:2022
