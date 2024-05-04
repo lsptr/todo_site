@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Sign In</title>
+    <title>Main Page</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -9,51 +9,73 @@
             padding: 200px;
             max-height: 100vh;
             max-width: 100vw;
-            overflow: auto;
+            overflow: hidden;
         }
 
         .container {
             width: 800px;
-            margin: -150px auto;
+            position: relative;
+            margin: auto;
             background-color: #d0e1c2;
             border-radius: 5px;
             padding: 200px;
-
+            display: flex; /* Установите контейнер в качестве flex-контейнера */
+            justify-content: center; /* Выровняйте кнопки по горизонтали в центре */
+            align-items: center; /* Выровняйте кнопки по вертикали в центре */
+            gap: 40px; /* Установите расстояние между кнопками */
+            height: 1px;
         }
 
-        label {
-            display: block;
-            margin-bottom: 10px;
+        .my-list, .my-profile, .users {
+            background-color: #4CAF50; /* Цвет фона */
+            color: white; /* Цвет текста */
+            padding: 10px 20px; /* Отступы вокруг текста */
+            border: none; /* Убираем границу */
+            border-radius: 5px; /* Скругление углов */
+            cursor: pointer; /* Изменение курсора при наведении */
+            font-size: 40px; /* Размер шрифта */
+            text-shadow: 1px 1px 2px #708170;
+            float: left;
+            margin-right: 10px;
+            white-space: nowrap; /* Предотвращает перенос текста на новую строку */
         }
 
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #d2d2d2;
-            border-radius: 5px;
+        .my-list:hover,.my-profile:hover,.users:hover {
+            background-color: #45a049; /* Цвет фона при наведении */
+            transition-duration: 0.4s; /* Продолжительность перехода */
         }
 
-        input[type="submit"] {
+        .quit-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
             background-color: #4CAF50;
             color: white;
             padding: 10px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            font-weight: bold;
         }
 
-        input[type="submit"]:hover {
+        .quit-button:hover {
             background-color: #45a049;
         }
 
         h1 {
             color: #ffffff;
-            position: relative;
-            bottom: 200px;
-            left: 150px;
-            font-size: 40px;
-            text-shadow: 1px 1px 1px #8c988c;
+            position: absolute; /* Позиционирование заголовка относительно родителя */
+            top: 10%; /* Смещаем верхний край заголовка в центр */
+            left: 37%; /* Смещаем левый край заголовка в центр */
+            transform: translate(-50%, -50%); /* Смещаем заголовок обратно на половину его собственной ширины и высоты */
+            font-size: 50px;
+            text-shadow: 2px 2px 3px #909690;
         }
         .colorlib-bubbles {
             position: absolute;
@@ -195,17 +217,9 @@
                 transform: translateY(-500px) rotate(1200deg);
             }
         }
-        .my-list, .my-profile, .users {
-            background-color: #4CAF50; /* Цвет фона */
-            color: white; /* Цвет текста */
-            padding: 10px 20px; /* Отступы вокруг текста */
-            border: none; /* Убираем границу */
-            border-radius: 5px; /* Скругление углов */
-            cursor: pointer; /* Изменение курсора при наведении */
-            font-size: 30px; /* Размер шрифта */
-            float: left;
-            margin-right: 10px;
-        }
+
+
+
     </style>
 </head>
 <body>
@@ -228,17 +242,33 @@
     <button class="my-profile">Мой профиль</button>
     <button class="users">Пользователи сайта</button>
 </div>
+<a href="http://localhost:8000/auth/sign-in" class="quit-button">Выход</a>
 <script>
     //ID
     var userId = localStorage.getItem('userId');
-    document.querySelector('.my-list').addEventListener('click', function() {
+    document.querySelector('.my-list').addEventListener('click', function () {
         window.location.href = 'http://localhost:8000/api/lists';
     });
-    document.querySelector('.my-profile').addEventListener('click', function() {
+    document.querySelector('.my-profile').addEventListener('click', function () {
         window.location.href = 'http://localhost:8000/api/profile/' + userId;
     });
-    document.querySelector('.users').addEventListener('click', function() {
+    document.querySelector('.users').addEventListener('click', function () {
         window.location.href = 'http://localhost:8000/api/users';
+    });
+    document.querySelector('.quit-button').addEventListener('click', function(event) {
+        event.preventDefault();
+        fetch('/api/main', {
+            method: 'POST'
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Вы успешно вышли из системы") {
+                    window.location.href = 'http://localhost:8000/auth/sign-in'; // Перенаправление на страницу входа после выхода
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+            });
     });
 </script>
 

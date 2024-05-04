@@ -46,6 +46,23 @@ type UpdateListInput struct {
 	Description *string `json:"description"`
 }
 
+type Statuses struct {
+	Id          int    `json:"id" db:"id"`
+	Description string `json:"description" db:"description"`
+}
+
+type UsersStatuses struct {
+	Id       int
+	UserId   int
+	StatusId int
+}
+
+type UserStatusPage struct {
+	Id     int    `json:"id" db:"id"`
+	Name   string `json:"name" db:"name"`
+	Status string `json:"status" db:"status"`
+}
+
 func (i UpdateListInput) Validate() error {
 	if i.Title == nil && i.Description == nil {
 		return errors.New("update structure has no values")

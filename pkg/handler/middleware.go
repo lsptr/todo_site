@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
@@ -34,7 +35,10 @@ func (h *Handler) userIdentity(c *gin.Context) {
 
 	header := c.GetHeader(authorizationHeader)
 	if header == "" {
-		newErrorResponse(c, http.StatusUnauthorized, "empty auth header")
+		//newErrorResponse(c, http.StatusUnauthorized, "empty auth header")
+		logrus.Errorf("message", "empty auth header")
+		//newJSONResponse(c, http.StatusUnauthorized, "error", "empty auth header")
+		c.Redirect(http.StatusSeeOther, "/auth/no-authorisation")
 		return
 	}
 

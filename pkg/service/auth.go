@@ -93,3 +93,16 @@ func (s *AuthService) GetAllNames() ([]string, error) {
 	}
 	return names, nil
 }
+
+//func (s *AuthService) CheckName(name string) (bool, error) {
+//	names, err := s.repo.GetNames()
+//	if err != nil {
+//		return false, err
+//	}
+//	for _, n := range names {
+//		if n == name {
+//			return false, nil
+//		}
+//	}
+//	return true, nil
+//}

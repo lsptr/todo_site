@@ -1,6 +1,7 @@
 package service
 
 import (
+	todo "ToDoApp"
 	"ToDoApp/pkg/repository"
 	"fmt"
 )
@@ -13,13 +14,13 @@ func NewStatusService(repo repository.Status) *StatusService {
 	return &StatusService{repo: repo}
 }
 
-func (s *StatusService) GetAllStatuses() ([][]string, error) {
-	statuses, err := s.repo.GetUsersStatuses()
+func (s *StatusService) GetUsersStatuses() ([]todo.UserStatusPage, error) {
+	usersStatuses, err := s.repo.GetUsersStatuses()
 	if err != nil {
 		return nil, err
 	}
-	for _, status := range statuses {
-		fmt.Println("Name: ", status[0], " Status: ", status[1])
+	for _, status := range usersStatuses {
+		fmt.Println("Id: ", status.Id, "Name: ", status.Name, " Status: ", status.Status)
 	}
-	return statuses, nil
+	return usersStatuses, nil
 }

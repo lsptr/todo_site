@@ -4,7 +4,7 @@
 CREATE TABLE users
 (
     id SERIAL NOT NULL UNIQUE,
-    name VARCHAR NOT NULL,
+    name VARCHAR NOT NULL UNIQUE,
     username VARCHAR NOT NULL UNIQUE,
     password_hash VARCHAR NOT NULL
 );
@@ -72,7 +72,3 @@ CREATE TABLE comments
     author_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL,
     receiver_id INT REFERENCES users(id) ON DELETE CASCADE NOT NULL
 );
-
---CREATE USER urusswhat WITH PASSWORD 'fpeople';
-
---ALTER USER urusswhat WITH SUPERUSER;

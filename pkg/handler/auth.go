@@ -35,15 +35,16 @@ type signInInput struct {
 
 func (h *Handler) signIn(c *gin.Context) {
 	var input signInInput
-
 	if err := c.Bind(&input); err != nil {
-		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		newJSONResponse(c, http.StatusBadRequest, "error", err.Error())
+		//c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
 	if err != nil {
-		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		newJSONResponse(c, http.StatusInternalServerError, "error", err.Error())
+		//c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	// Set the JWT token in a cookie
@@ -61,7 +62,11 @@ func (h *Handler) signIn(c *gin.Context) {
 	session.Values["username"] = name
 	session.Save(c.Request, c.Writer)
 
-	// Redirect the user to the main page
-	c.Redirect(http.StatusSeeOther, "/api/main")
+	c.JSON(http.StatusOK, statusResponse{"ok"})
 
+}
+
+func (h *Handler) signOut(c *gin.Context) {
+	c.SetCookie("jwt", "", -1, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Вы успешно вышли из системы"})
 }

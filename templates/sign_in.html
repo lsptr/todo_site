@@ -4,25 +4,32 @@
     <title>Sign In</title>
     <style>
         body {
+
             font-family: Arial, sans-serif;
             background-color: #afd593;
             padding: 200px;
             max-height: 100vh;
             max-width: 100vw;
-            overflow: auto;
+            overflow: hidden;
         }
 
         .container {
             width: 300px;
+            position: relative;
             margin: auto;
+            margin-top: 60px;
             background-color: #d0e1c2;
             border-radius: 5px;
-            padding: 30px;
+            padding: 35px;
+
         }
 
         label {
             display: block;
             margin-bottom: 10px;
+            font-weight: bold;
+            color: #428143;
+            text-shadow: 1px 1px 1px #d2d9d2;
         }
 
         input[type="text"], input[type="password"] {
@@ -31,6 +38,7 @@
             margin-bottom: 20px;
             border: 1px solid #d2d2d2;
             border-radius: 5px;
+            box-sizing: border-box; /* То же самое для полей ввода */
         }
 
         input[type="submit"] {
@@ -40,6 +48,8 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         input[type="submit"]:hover {
@@ -48,12 +58,37 @@
 
         h1 {
             color: #ffffff;
-            position: relative;
-            bottom: 50px;
-            left: 585px;
+            position: absolute; /* Позиционирование заголовка относительно родителя */
+            top: 15%; /* Смещаем верхний край заголовка в центр */
+            left: 50%; /* Смещаем левый край заголовка в центр */
+            transform: translate(-50%, -50%); /* Смещаем заголовок обратно на половину его собственной ширины и высоты */
             font-size: 40px;
-            text-shadow: 1px 1px 1px #8c988c;
+            text-shadow: 1px 1px 2px #717a71;
         }
+
+        .register-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            font-weight: bold;
+        }
+
+        .register-button:hover {
+            background-color: #45a049;
+        }
+
         .colorlib-bubbles {
             position: absolute;
             top: 0;
@@ -194,6 +229,15 @@
                 transform: translateY(-500px) rotate(1200deg);
             }
         }
+        #errorContainer {
+            border-radius: 10px; /* Закругление углов */
+            background-color: #7dab70; /* Фон */
+            color: #ffffff; /* Текст */
+            padding: 10px; /* Отступы */
+            margin-bottom: 20px; /* Отступ снизу для лучшего разделения с другими элементами */
+        }
+
+
     </style>
 </head>
 <body>
@@ -211,7 +255,7 @@
 </ul>
 <h1>Вход в систему:</h1>
 <div class="container">
-    <form action="/auth/sign-in" method="post">
+    <form id="signinForm" action="/auth/sign-in" method="post">
         <label for="username">Логин:</label>
         <input type="text" id="username" name="username">
 
@@ -221,5 +265,50 @@
         <input type="submit" value="Войти">
     </form>
 </div>
+<div id="errorContainer" style="display: none; position: fixed; top: 10px; left: 10px; background-color: #7dab70; color: #ffffff; padding: 10px;">
+    Ошибка: <span id="errorMessage"></span>
+</div>
+<a href="http://localhost:8000/auth/sign-up" class="register-button">Регистрация пользователя</a>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('signinForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            fetch('/auth/sign-in', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        // Проверяем, содержит ли сообщение об ошибке фразу о нарушении уникальности
+                        if (data.error.includes("no rows in result set")) {
+                            // Заменяем стандартное сообщение об ошибке на "Неправильный логин или пароль"
+                            data.error = "Неправильный логин или пароль";
+                        }
+                        if (data.error.includes("failed on the 'required' tag")) {
+                            // Заменяем стандартное сообщение об ошибке на "Заполните все данные"
+                            data.error = "Заполните все данные";
+                        }
+                        document.getElementById('errorMessage').textContent = data.error;
+                        document.getElementById('errorContainer').style.display = 'block';
+
+                        // Автоматическое скрытие сообщения через 5 секунд
+                        setTimeout(function() {
+                            document.getElementById('errorContainer').style.display = 'none';
+                        }, 5000); // 5000 миллисекунд = 5 секунд
+                    } else {
+                        // Если нет сообщения об ошибке, значит, аутентификация прошла успешно
+                        window.location.href = 'http://localhost:8000/api/main';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+        });
+    });
+</script>
 </body>
 </html>

@@ -17,3 +17,8 @@ func newErrorResponse(c *gin.Context, statusCode int, message string) {
 	logrus.Errorf(message)
 	c.AbortWithStatusJSON(statusCode, errorResponse{message})
 }
+
+func newJSONResponse(c *gin.Context, statusCode int, message string, err string) {
+	logrus.Errorf(message, err)
+	c.JSON(statusCode, gin.H{message: err})
+}

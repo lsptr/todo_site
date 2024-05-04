@@ -35,6 +35,12 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.GET("/sign-up", func(c *gin.Context) {
 			c.HTML(http.StatusOK, "sign_up.html", gin.H{})
 		})
+		auth.GET("/sign-up-succeed", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "sign_up_succeed.html", gin.H{})
+		})
+		auth.GET("/no-authorisation", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "no_authorisation.html", gin.H{})
+		})
 
 	}
 
@@ -65,6 +71,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		main := api.Group("/main")
 		{
 			main.GET("/", h.mainPage)
+			main.POST("/", h.signOut)
 		}
 		users := api.Group("/users")
 		{

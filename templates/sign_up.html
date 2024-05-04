@@ -9,20 +9,25 @@
             padding: 200px;
             max-height: 100vh;
             max-width: 100vw;
-            overflow: auto;
+            overflow: hidden;
         }
 
         .container {
             width: 300px;
+            position: relative;
             margin: auto;
+            margin-top: 60px;
             background-color: #d0e1c2;
             border-radius: 5px;
-            padding: 30px;
+            padding: 35px;
         }
 
         label {
             display: block;
             margin-bottom: 10px;
+            font-weight: bold;
+            color: #428143;
+            text-shadow: 1px 1px 1px #d2d9d2;
         }
 
         input[type="text"], input[type="password"] {
@@ -31,6 +36,7 @@
             margin-bottom: 20px;
             border: 1px solid #d2d2d2;
             border-radius: 5px;
+            box-sizing: border-box; /* То же самое для полей ввода */
         }
 
         input[type="submit"] {
@@ -40,19 +46,46 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
         }
 
         input[type="submit"]:hover {
             background-color: #45a049;
         }
         h1 {
-            color: #ffffff; /* Измените на желаемый цвет */
-            position: relative; /* Используйте, если вы хотите контролировать положение */
-            bottom: 50px; /* Переместите текст вниз на 50px */
-            left: 490px;
-            font-size: 40px; /* Увеличьте размер шрифта */
-            text-shadow: 1px 1px 1px #8c988c; /* Добавьте тень */
+            color: #ffffff;
+            position: absolute; /* Позиционирование заголовка относительно родителя */
+            top: 15%; /* Смещаем верхний край заголовка в центр */
+            left: 50.5%; /* Смещаем левый край заголовка в центр */
+            transform: translate(-50%, -50%); /* Смещаем заголовок обратно на половину его собственной ширины и высоты */
+            font-size: 40px;
+            text-shadow: 1px 1px 2px #717a71;
         }
+
+        .signin-button {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            font-weight: bold;
+        }
+
+        .signin-button:hover {
+            background-color: #45a049;
+        }
+
         .colorlib-bubbles {
             position: absolute;
             top: 0;
@@ -193,6 +226,13 @@
                 transform: translateY(-500px) rotate(1200deg);
             }
         }
+        #errorContainer {
+            border-radius: 10px; /* Закругление углов */
+            background-color: #7dab70; /* Фон */
+            color: #ffffff; /* Текст */
+            padding: 10px; /* Отступы */
+            margin-bottom: 20px; /* Отступ снизу для лучшего разделения с другими элементами */
+        }
     </style>
 </head>
 <body>
@@ -210,7 +250,7 @@
 </ul>
 <h1>Регистрация пользователя:</h1>
 <div class="container">
-    <form action="/auth/sign-up" method="post">
+    <form id="signupForm" action="/auth/sign-up" method="post">
         <label for="name">Ваше имя:</label>
         <input type="text" id="name" name="name">
 
@@ -223,5 +263,49 @@
         <input type="submit" value="Зарегистрироваться">
     </form>
 </div>
+<div id="errorContainer" style="display: none; position: fixed; top: 10px; left: 10px; background-color: #7dab70; color: #ffffff; padding: 10px;">
+    Ошибка: <span id="errorMessage"></span>
+</div>
+<a href="http://localhost:8000/auth/sign-in" class="signin-button">Вход в систему</a>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('signupForm');
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(form);
+            fetch('/auth/sign-up', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        // Проверяем, содержит ли сообщение об ошибке фразу о нарушении уникальности
+                        if (data.message.includes("duplicate key value violates unique constraint")) {
+                            // Заменяем стандартное сообщение об ошибке на "Такой логин уже существует"
+                            data.message = "Такой логин уже существует";
+                        }
+                        if (data.message.includes("failed on the 'required' tag")) {
+                            // Заменяем стандартное сообщение об ошибке на "Такой логин уже существует"
+                            data.message = "Заполните все данные";
+                        }
+                        document.getElementById('errorMessage').textContent = data.message;
+                        document.getElementById('errorContainer').style.display = 'block';
+
+                        // Автоматическое скрытие сообщения через 5 секунд
+                        setTimeout(function() {
+                            document.getElementById('errorContainer').style.display = 'none';
+                        }, 5000); // 5000 миллисекунд = 5 секунд
+                    } else {
+                        window.location.href = 'http://localhost:8000/auth/sign-up-succeed';
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка:', error);
+                });
+        });
+    });
+</script>
 </body>
 </html>

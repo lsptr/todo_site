@@ -11,6 +11,7 @@ type Authorization interface {
 	ParseToken(token string) (int, error)
 	GetName(username, password string) (string, error)
 	GetAllNames() ([]string, error)
+	//CheckName(name string) (bool, error)
 }
 
 type TodoList interface {
@@ -30,7 +31,7 @@ type TodoItem interface {
 }
 
 type Status interface {
-	GetAllStatuses() ([][]string, error)
+	GetUsersStatuses() ([]todo.UserStatusPage, error)
 }
 
 type Service struct {

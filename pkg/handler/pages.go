@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"log"
@@ -31,14 +30,12 @@ func (h *Handler) mainPage(c *gin.Context) {
 }
 
 func (h *Handler) usersPage(c *gin.Context) {
-	names, err := h.services.Authorization.GetAllNames()
+	usersStatuses, err := h.services.Status.GetUsersStatuses()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		newJSONResponse(c, http.StatusInternalServerError, "error", err.Error())
 		return
 	}
-	statuses, err := h.services.Status.GetAllStatuses()
-	c.HTML(http.StatusOK, "users.html", gin.H{"names": names})
-	for _, status := range statuses {
-		fmt.Println("Name: ", status[0], " Status: ", status[1])
-	}
+
+	c.HTML(http.StatusOK, "users.html", gin.H{"usersStatuses": usersStatuses})
+
 }

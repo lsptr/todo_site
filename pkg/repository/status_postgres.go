@@ -1,8 +1,11 @@
 package repository
 
 import (
+	todo "ToDoApp"
+	"database/sql"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"log"
 )
 
 type StatusPostgres struct {
@@ -55,28 +58,19 @@ func (r *StatusPostgres) Delete(statusId int) error {
 	return tx.Commit()
 }
 
-func (r *StatusPostgres) GetUsersStatuses() ([][]string, error) {
-	var usersStatuses [][]string
-	query := fmt.Sprintf(`
-		SELECT u.name, s.description 
-		FROM %s u 
-		LEFT JOIN %s us ON u.id = us.user_id 
-		LEFT JOIN %s s ON us.status_id = s.id
-	`, usersTable, usersStatusesTable, statusesTable)
-	rows, err := r.db.Query(query)
+func (r *StatusPostgres) GetUsersStatuses() ([]todo.UserStatusPage, error) {
+	var usersStatuses []todo.UserStatusPage
+	query := fmt.Sprintf("SELECT u.id, u.name, COALESCE(s.description, '') AS status FROM %s u LEFT JOIN %s us ON u.id = us.user_id LEFT JOIN %s s ON us.status_id = s.id", usersTable, usersStatusesTable, statusesTable)
+	err := r.db.Select(&usersStatuses, query)
 	if err != nil {
+		log.Println(err.Error())
+		if err == sql.ErrNoRows {
+			log.Println("GetUsersStatuses: No rows were returned!")
+			return nil, nil
+		}
 		return nil, err
 	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var name, description string
-		if err := rows.Scan(&name, &description); err != nil {
-			return nil, err
-		}
-		usersStatuses = append(usersStatuses, []string{name, description})
-	}
-	return usersStatuses, rows.Err()
+	return usersStatuses, nil
 }
 
 func (r *StatusPostgres) SetStatus(userId int, statusId int) error {

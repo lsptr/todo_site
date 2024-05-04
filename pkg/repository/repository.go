@@ -31,7 +31,7 @@ type Status interface {
 	Create(description string) (int, error)
 	GetAll() ([]Status, error)
 	Delete(statusId int) error
-	GetUsersStatuses() ([][]string, error)
+	GetUsersStatuses() ([]todo.UserStatusPage, error)
 	SetStatus(userId int, statusId int) error
 	DropStatus(userId int) error
 }
