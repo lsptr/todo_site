@@ -77,12 +77,12 @@ func generatePasswordHash(password string) string {
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *AuthService) GetName(username, password string) (string, error) {
+func (s *AuthService) GetIdName(username, password string) (string, int, error) {
 	user, err := s.repo.GetUser(username, generatePasswordHash(password))
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
-	return user.Name, nil
+	return user.Name, user.Id, nil
 }
 
 func (s *AuthService) GetAllNames() ([]string, error) {

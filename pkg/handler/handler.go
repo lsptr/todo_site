@@ -46,6 +46,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentity)
 	{
+		api.GET("/no-access", func(c *gin.Context) {
+			c.HTML(http.StatusOK, "no_access.html", gin.H{})
+		})
+
 		lists := api.Group("/lists")
 		{
 			lists.POST("/", h.createList)
@@ -76,6 +80,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		users := api.Group("/users")
 		{
 			users.GET("/", h.usersPage)
+		}
+		admin := api.Group("/admin", h.adminIdentity)
+		{
+			console := admin.Group("/console")
+			{
+				console.GET("/", h.adminPage)
+			}
 		}
 	}
 

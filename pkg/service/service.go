@@ -9,7 +9,7 @@ type Authorization interface {
 	CreateUser(user todo.User) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
-	GetName(username, password string) (string, error)
+	GetIdName(username, password string) (string, int, error)
 	GetAllNames() ([]string, error)
 	//CheckName(name string) (bool, error)
 }
@@ -34,11 +34,16 @@ type Status interface {
 	GetUsersStatuses() ([]todo.UserStatusPage, error)
 }
 
+type Admin interface {
+	GetRole(userId int) (todo.Role, error)
+}
+
 type Service struct {
 	Authorization
 	TodoList
 	TodoItem
 	Status
+	Admin
 }
 
 func NewService(repos *repository.Repository) *Service {
@@ -47,5 +52,6 @@ func NewService(repos *repository.Repository) *Service {
 		TodoList:      NewTodoListService(repos.TodoList),
 		TodoItem:      NewTodoItemService(repos.TodoItem, repos.TodoList),
 		Status:        NewStatusService(repos.Status),
+		Admin:         NewAdminService(repos.Admin),
 	}
 }

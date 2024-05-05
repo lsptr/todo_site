@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/sessions"
 	"net/http"
+	"strconv"
 )
 
 var store = sessions.NewCookieStore([]byte("your-secret-key"))
@@ -51,7 +52,7 @@ func (h *Handler) signIn(c *gin.Context) {
 	c.SetCookie("jwt", token, 3600, "/", "localhost", false, true)
 
 	// Извлекаем пользователя из базы данных
-	name, err := h.services.Authorization.GetName(input.Username, input.Password)
+	name, id, err := h.services.Authorization.GetIdName(input.Username, input.Password)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -60,6 +61,7 @@ func (h *Handler) signIn(c *gin.Context) {
 	// Сохраняем имя пользователя в сессии
 	session, _ := store.Get(c.Request, "session-name")
 	session.Values["username"] = name
+	session.Values["id"] = strconv.Itoa(id)
 	session.Save(c.Request, c.Writer)
 
 	c.JSON(http.StatusOK, statusResponse{"ok"})

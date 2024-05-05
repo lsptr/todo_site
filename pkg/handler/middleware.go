@@ -11,6 +11,7 @@ import (
 const (
 	authorizationHeader = "Authorization"
 	userCtx             = "userId"
+	roleCtx             = "role"
 )
 
 func (h *Handler) userIdentity(c *gin.Context) {
@@ -69,4 +70,21 @@ func getUserId(c *gin.Context) (int, error) {
 		return 0, errors.New("user id is not found")
 	}
 	return idInt, nil
+}
+
+func (h *Handler) adminIdentity(c *gin.Context) {
+	id, err := getUserId(c)
+
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	role, err := h.services.Admin.GetRole(id)
+	if err != nil {
+		logrus.Errorf("message", "no access to admin page")
+		c.Redirect(http.StatusSeeOther, "/api/no-access")
+		return
+	}
+	c.Set(roleCtx, role)
 }

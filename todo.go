@@ -63,6 +63,12 @@ type UserStatusPage struct {
 	Status string `json:"status" db:"status"`
 }
 
+type Role struct {
+	Id          int    `json:"id" db:"id"`
+	Title       string `json:"title" db:"title"`
+	Description string `json:"description" db:"description"`
+}
+
 func (i UpdateListInput) Validate() error {
 	if i.Title == nil && i.Description == nil {
 		return errors.New("update structure has no values")

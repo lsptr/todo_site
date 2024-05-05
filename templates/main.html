@@ -218,6 +218,29 @@
             }
         }
 
+        .admin-cabinet {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            font-weight: bold;
+        }
+
+        .admin-cabinet:hover {
+            background-color: #45a049;
+        }
+
 
 
     </style>
@@ -242,6 +265,7 @@
     <button class="my-profile">Мой профиль</button>
     <button class="users">Пользователи сайта</button>
 </div>
+<a href="http://localhost:8000/api/admin/console" class="admin-cabinet">Кабинет администратора</a>
 <a href="http://localhost:8000/auth/sign-in" class="quit-button">Выход</a>
 <script>
     //ID

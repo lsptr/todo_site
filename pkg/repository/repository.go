@@ -36,11 +36,16 @@ type Status interface {
 	DropStatus(userId int) error
 }
 
+type Admin interface {
+	GetRole(userId int) (todo.Role, error)
+}
+
 type Repository struct {
 	Authorization
 	TodoList
 	TodoItem
 	Status
+	Admin
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
@@ -49,5 +54,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		TodoList:      NewTodoListPostgres(db),
 		TodoItem:      newTodoItemPostgres(db),
 		Status:        NewStatusPostgres(db),
+		Admin:         NewAdminPostgres(db),
 	}
 }
