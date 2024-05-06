@@ -38,6 +38,7 @@ type Status interface {
 
 type Admin interface {
 	GetRole(userId int) (todo.Role, error)
+	DeleteUser(userId int) error
 }
 
 type Repository struct {

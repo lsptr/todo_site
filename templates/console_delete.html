@@ -252,8 +252,38 @@
             font-style: italic; /* Добавьте курсив */
             font-weight: lighter;
         }
+        .name-link::before {
+            content: "";
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #428143;
+            margin-right: 10px; /* Отступ справа от стрелки */
+        }
 
-        .admin-delete {
+        .delete-user-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+            font-weight: bold;
+        }
+
+        .delete-user-btn:hover {
+            background-color: #45a24a;
+        }
+
+        .back {
             position: fixed;
             top: 10px;
             left: 10px;
@@ -272,7 +302,7 @@
             font-weight: bold;
         }
 
-        .admin-delete:hover {
+        .back:hover {
             background-color: #45a049;
         }
 
@@ -296,12 +326,78 @@
 <div class="container">
     <ul>
         {{ range.usersStatuses }}
-        <li><a href="http://localhost:8000/api/users/{{.Id}}" class="name-link">{{.Name}} <span class="status-text">{{.Status}}</span></a><span class="role-text">{{.Role}}</span></li>
+        <li data-user-id="{{.Id}}">
+            <a class="name-link">{{.Name}} <span class="status-text">{{.Status}}</span></a>
+            <button class="delete-user-btn" style="display:none;">Удалить пользователя</button>
+            <span class="role-text">{{.Role}}</span>
+        </li>
         {{ end }}
     </ul>
 </div>
-<a href="http://localhost:8000/api/admin/console/delete" class="admin-delete">Удаление пользователей</a>
-<a href="http://localhost:8000/api/main" class="main-page-button">На главную страницу</a>
+<div id="errorPopup" style="display: none; position: fixed; top: 10%; left: 50%; transform: translate(-50%, -50%); background-color: #7dab70; color: #ffffff; padding: 20px; border-radius: 5px; z-index: 1000;">
+    <p id="errorPopupMessage"></p>
+</div>
+<a href="http://localhost:8000/api/admin/console" class="back">назад</a>
+<script>
+    document.querySelectorAll('.name-link').forEach(link => {
+        link.addEventListener('click', function(event) {
+            const deleteBtn = this.nextElementSibling;
+            if (deleteBtn.style.display === 'none') {
+                deleteBtn.style.display = 'inline-block';
+            } else {
+                deleteBtn.style.display = 'none';
+            }
+        });
+    });
+
+    // Обработчик событий для кнопки удаления
+    document.querySelectorAll('.delete-user-btn').forEach(btn => {
+        btn.addEventListener('click', function(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение ссылки
+
+            // Получаем userId из атрибута data-user-id родительского элемента
+            const userId = parseInt(this.parentElement.getAttribute('data-user-id'), 10);
+            const userRole = this.parentElement.querySelector('.role-text').innerText;
+
+            // Отправляем DELETE запрос на сервер
+            console.log('Sending request...');
+            fetch(`/api/admin/console/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id: userId, role: userRole }), // Передаем userId и role в теле запроса
+            })
+                .then(response => {
+                    if (response.status === 400) {
+                        // Выводим сообщение "Нельзя удалить пользователя с ролью", если код состояния 400
+                        document.getElementById('errorPopupMessage').textContent = "Нельзя удалить пользователя с ролью";
+                        document.getElementById('errorPopup').style.display = 'block';
+
+                        setTimeout(function() {
+                            document.getElementById('errorPopup').style.display = 'none';
+                        }, 5000); // 5000 миллисекунд = 5 секунд
+                    }
+                    console.log(response.status); // Проверьте статус ответа
+                    if (!response.ok) { // Проверяем, был ли запрос успешным
+                        throw new Error('Ошибка при удалении пользователя');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        console.log(data.error);
+                        alert(data.error); // Выводим сообщение об ошибке, если оно есть
+                    } else {
+                        window.location.href = "http://localhost:8000/api/admin/console/"; // Переходим на страницу администратора после успешного удаления
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error); // Логирование ошибки
+                });
+        });
+    });
+</script>
 </body>
 </html>
 

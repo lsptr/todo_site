@@ -86,6 +86,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			console := admin.Group("/console")
 			{
 				console.GET("/", h.adminPage)
+				console.GET("/delete", h.adminDeletePage)
+				console.DELETE("/delete", h.adminDelete)
 			}
 		}
 	}

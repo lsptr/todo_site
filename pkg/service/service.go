@@ -36,6 +36,7 @@ type Status interface {
 
 type Admin interface {
 	GetRole(userId int) (todo.Role, error)
+	DeleteUser(UserId int) error
 }
 
 type Service struct {

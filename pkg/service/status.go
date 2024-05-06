@@ -3,7 +3,6 @@ package service
 import (
 	todo "ToDoApp"
 	"ToDoApp/pkg/repository"
-	"fmt"
 )
 
 type StatusService struct {
@@ -19,8 +18,6 @@ func (s *StatusService) GetUsersStatuses() ([]todo.UserStatusPage, error) {
 	if err != nil {
 		return nil, err
 	}
-	for _, status := range usersStatuses {
-		fmt.Println("Id: ", status.Id, "Name: ", status.Name, " Status: ", status.Status)
-	}
+
 	return usersStatuses, nil
 }

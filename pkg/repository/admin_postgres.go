@@ -20,3 +20,13 @@ func (r *AdminPostgres) GetRole(userId int) (todo.Role, error) {
 	err := r.db.Get(&role, query, userId)
 	return role, err
 }
+
+func (r *AdminPostgres) DeleteUser(userId int) error {
+	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", usersTable)
+	_, err := r.db.Exec(query, userId)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

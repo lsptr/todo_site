@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -24,11 +25,30 @@ func (h *Handler) usersPage(c *gin.Context) {
 		newJSONResponse(c, http.StatusInternalServerError, "error", err.Error())
 		return
 	}
+
 	c.HTML(http.StatusOK, "users.html", gin.H{"usersStatuses": usersStatuses})
 
 }
 
 func (h *Handler) adminPage(c *gin.Context) {
 
-	c.HTML(http.StatusOK, "console.html", gin.H{})
+	usersStatuses, err := h.services.Status.GetUsersStatuses()
+	if err != nil {
+		newJSONResponse(c, http.StatusInternalServerError, "error", err.Error())
+		return
+	}
+	c.HTML(http.StatusOK, "console.html", gin.H{"usersStatuses": usersStatuses})
+}
+
+func (h *Handler) adminDeletePage(c *gin.Context) {
+	usersStatuses, err := h.services.Status.GetUsersStatuses()
+
+	if err != nil {
+		newJSONResponse(c, http.StatusInternalServerError, "error", err.Error())
+		return
+	}
+	for _, i := range usersStatuses {
+		fmt.Println(i.Id, i.Role)
+	}
+	c.HTML(http.StatusOK, "console_delete.html", gin.H{"usersStatuses": usersStatuses})
 }

@@ -60,7 +60,7 @@ func (r *StatusPostgres) Delete(statusId int) error {
 
 func (r *StatusPostgres) GetUsersStatuses() ([]todo.UserStatusPage, error) {
 	var usersStatuses []todo.UserStatusPage
-	query := fmt.Sprintf("SELECT u.id, u.name, COALESCE(s.description, '') AS status FROM %s u LEFT JOIN %s us ON u.id = us.user_id LEFT JOIN %s s ON us.status_id = s.id", usersTable, usersStatusesTable, statusesTable)
+	query := fmt.Sprintf("SELECT u.id, u.name, COALESCE(s.description, '') AS status, COALESCE(r.title, '') AS role FROM %s u LEFT JOIN %s us ON u.id = us.user_id LEFT JOIN %s s ON us.status_id = s.id LEFT JOIN %s ur ON u.id = ur.user_id LEFT JOIN %s r ON ur.role_id = r.id", usersTable, usersStatusesTable, statusesTable, usersRolesTable, rolesTable)
 	err := r.db.Select(&usersStatuses, query)
 	if err != nil {
 		log.Println(err.Error())

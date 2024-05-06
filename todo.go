@@ -61,6 +61,7 @@ type UserStatusPage struct {
 	Id     int    `json:"id" db:"id"`
 	Name   string `json:"name" db:"name"`
 	Status string `json:"status" db:"status"`
+	Role   string `json:"role" db:"role"`
 }
 
 type Role struct {
